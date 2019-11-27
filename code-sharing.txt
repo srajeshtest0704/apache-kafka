@@ -1,0 +1,846 @@
+package com.boa.training.sender;
+
+import java.util.List;
+import java.util.Properties;
+import java.util.ArrayList;
+
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.serialization.StringSerializer;
+
+public class FirstSender {
+
+	public static void main(String[] args) {
+				
+		Properties props=new Properties();
+		props.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+		props.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+		props.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+		
+		KafkaProducer<String, String> producer=new KafkaProducer<String, String>(props);
+		String topic="first-topic";
+		
+		
+		for(int i=1;i<=10;i++){
+			ProducerRecord<String, String> record=new ProducerRecord<String, String>(topic, "test-msg", "This is test message "+i);
+			producer.send(record);
+		}
+		
+		System.out.println("messages sent");
+		producer.close();
+	}
+
+}
+
+package com.boa.training.receiver;
+
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.serialization.StringDeserializer;
+
+public class ReceiverTest1 {
+
+	public static void main(String[] args) {
+				
+		Properties props=new Properties();
+		props.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+		props.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+		props.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+		props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "test-group");
+		KafkaConsumer<String, String> consumer=new KafkaConsumer<String, String>(props);
+		List<String> topics=new ArrayList<String>();
+		topics.add("first-topic");
+		consumer.subscribe(topics);
+		System.out.println("waiting for messages");
+		while(true){
+			ConsumerRecords<String, String> records=consumer.poll(Duration.ofSeconds(5));
+			for(ConsumerRecord<String, String> record:records){
+				System.out.println("partition: "+record.partition()+" key: "+record.key()+" payload:"+ record.value());
+			}
+		}
+		
+	}
+
+}
+
+import java.util.Properties;
+
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.serialization.StringSerializer;
+
+
+
+
+
+public class SenderWithCallback {
+
+    public static void main(String[] args) {
+                
+        Properties props=new Properties();
+        props.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        props.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        props.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        
+        KafkaProducer<String, String> producer=new KafkaProducer<String, String>(props);
+        String topic="first-topic";
+        
+        
+        String key= "test-msg";
+        MyCallback callback=new MyCallback(key);
+        for(int i=1;i<=10;i++){
+            ProducerRecord<String, String> record=new ProducerRecord<String, String>(topic, key, "This is test message "+i);
+            producer.send(record,callback);
+        }
+        key="next-msg";
+        callback=new MyCallback(key);
+        for(int i=11;i<=20;i++){
+            ProducerRecord<String, String> record=new ProducerRecord<String, String>(topic, key, "This is next message "+i);
+            producer.send(record,callback);
+        }
+        key="third-msg";
+        callback=new MyCallback(key);
+        for(int i=21;i<=30;i++){
+            ProducerRecord<String, String> record=new ProducerRecord<String, String>(topic, key, "This is third message "+i);
+            producer.send(record,callback);
+        }
+        System.out.println("messages sent");
+        producer.close();
+    }
+
+}
+
+package com.boa.training.sender.partitioner;
+
+import java.util.Map;
+
+import org.apache.kafka.clients.producer.Partitioner;
+import org.apache.kafka.common.Cluster;
+
+public class MessagePartitioner implements Partitioner {
+
+    @Override
+    public void configure(Map<String, ?> map) {
+        // TODO Auto-generated method stub
+    System.out.println("configuring "); 
+    }
+
+    @Override
+    public void close() {
+        // TODO Auto-generated method stub
+        System.out.println("closing the partitioner");
+    }
+
+    @Override
+    public int partition(String topic, Object key, byte[] keyBytes, Object value,
+            byte[] valueBytes, Cluster arg5) {
+        // TODO Auto-generated method stub
+        String msgKey=(String)key;
+        int partition=3;
+        if(msgKey.equals("first-msg")){
+            partition=0;
+        }
+        else if(msgKey.equals("second-msg")){
+            partition=1;
+        }
+        else if(msgKey.equals("third-msg")){
+            partition=2;
+        }
+        
+        return partition;
+        @Override
+    public void configure(Map<String, ?> map) {
+        // TODO Auto-generated method stub
+    System.out.println("configuring "); 
+    }
+
+    @Override
+    public void close() {
+        // TODO Auto-generated method stub
+        System.out.println("closing the partitioner");
+    }
+
+    @Override
+    public int partition(String topic, Object key, byte[] keyBytes, Object value,
+            byte[] valueBytes, Cluster arg5) {
+        // TODO Auto-generated method stub
+        String msgKey=(String)key;
+        int partition=3;
+        if(msgKey.equals("first-msg")){
+            partition=0;
+        }
+        else if(msgKey.equals("second-msg")){
+            partition=1;
+        }
+        else if(msgKey.equals("third-msg")){
+            partition=2;
+        }
+        
+        return partition;
+    }
+
+}
+
+package com.boa.training.sender;
+
+import java.util.Properties;
+
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.serialization.StringSerializer;
+
+import com.boa.training.sender.partitioner.MessagePartitioner;
+
+
+
+
+
+public class SenderWithCallbackAndPartitioner {
+
+    public static void main(String[] args) {
+        // TODO Auto-generated method stub
+        
+        Properties props=new Properties();
+        props.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        props.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        props.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        props.setProperty(ProducerConfig.PARTITIONER_CLASS_CONFIG, MessagePartitioner.class.getName());
+        
+        KafkaProducer<String, String> producer=new KafkaProducer<String, String>(props);
+        String topic="first-topic";
+        
+        
+        String key= "first-msg";
+        MyCallback callback=new MyCallback(key);
+        for(int i=1;i<=10;i++){
+            ProducerRecord<String, String> record=new ProducerRecord<String, String>(topic, key, "This is test message "+i);
+            producer.send(record,callback);
+        }
+        key="second-msg";
+        callback=new MyCallback(key);
+        for(int i=11;i<=20;i++){
+            ProducerRecord<String, String> record=new ProducerRecord<String, String>(topic, key, "This is next message "+i);
+            producer.send(record,callback);
+        }
+        key="third-msg";
+        callback=new MyCallback(key);
+        for(int i=21;i<=30;i++){
+            ProducerRecord<String, String> record=new ProducerRecord<String, String>(topic, key, "This is third message "+i);
+            producer.send(record,callback);
+        }
+        
+        key="fourth-msg";
+        callback=new MyCallback(key);
+        for(int i=31;i<=40;i++){
+            ProducerRecord<String, String> record=new ProducerRecord<String, String>(topic, key, "This is fourth message "+i);
+            producer.send(record,callback);
+        }
+        
+        key="fifth-msg";
+        callback=new MyCallback(key);
+        for(int i=41;i<=50;i++){
+            ProducerRecord<String, String> record=new ProducerRecord<String, String>(topic, key, "This is fifth message "+i);
+            producer.send(record,callback);
+        }
+        System.out.println("messages sent");
+        producer.close();
+    }
+
+}
+
+package com.boa.training.receiver;
+
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.TopicPartition;
+import org.apache.kafka.common.serialization.StringDeserializer;
+
+
+
+public class ReceiverFromSpecificPartitionTest {
+
+    public static void main(String[] args) {
+        Properties props=new Properties();
+        props.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        props.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        props.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "first-group");
+        KafkaConsumer<String, String> consumer=new KafkaConsumer<String, String>(props);
+        List<TopicPartition> list=new ArrayList<TopicPartition>();
+        TopicPartition topicPartition=new TopicPartition("first-topic", Integer.parseInt(args[0]));
+        list.add(topicPartition);
+        consumer.assign(list);
+        System.out.println("waiting for messages");
+        while(true){
+            ConsumerRecords<String, String> records=consumer.poll(Duration.ofSeconds(5));
+            for(ConsumerRecord<String, String> record:records){
+                System.out.println("partition: "+record.partition()+" key: "+record.key()+" payload:"+ record.value());
+            }
+        }
+        
+    }
+
+}
+
+package com.boa.training.domain;
+
+public class Account {
+    private int accNo;
+    private int customerId;
+    private String accType;
+    
+    
+    public int getAccNo() {
+        return accNo;
+    }
+    public void setAccNo(int accNo) {
+        this.accNo = accNo;
+    }
+    public int getCustomerId() {
+        return customerId;
+    }
+    public void setCustomerId(int customerId) {
+        this.customerId = customerId;
+    }
+    public String getAccType() {
+        return accType;
+    }
+    public void setAccType(String accType) {
+        this.accType = accType;
+    }
+    public Account(int accNo, int customerId, String accType) {
+        super();
+        this.accNo = accNo;
+        this.customerId = customerId;
+        this.accType = accType;
+    }
+    public Account() {
+        super();
+    }
+    
+}
+
+package com.boa.training.domain;
+
+public class Account {
+    private int accNo;
+    private int customerId;
+    private String accType;
+    
+    
+    public int getAccNo() {
+        return accNo;
+    }
+    public void setAccNo(int accNo) {
+        this.accNo = accNo;
+    }
+    public int getCustomerId() {
+        return customerId;
+    }
+    public void setCustomerId(int customerId) {
+        this.customerId = customerId;
+    }
+    public String getAccType() {
+        return accType;
+    }
+    public void setAccType(String accType) {
+        this.accType = accType;
+    }
+    public Account(int accNo, int customerId, String accType) {
+        super();
+        this.accNo = accNo;
+        this.customerId = customerId;
+        this.accType = accType;
+    }
+    public Account() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+    
+    
+}
+
+
+
+
+package com.boa.training.serializer;
+
+import org.apache.kafka.common.serialization.Serializer;
+
+import com.boa.training.domain.Account;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+public class AccountSerializer implements Serializer<Account>{
+
+    private ObjectMapper mapper=new ObjectMapper();
+    
+
+    @Override
+    public byte[] serialize(String topic, Account account) {
+        // TODO Auto-generated method stub
+        byte[] array=null;
+        try {
+            String jsonContent=mapper.writeValueAsString(account);
+            System.out.println("serializing "+jsonContent);
+            array=jsonContent.getBytes();
+        } catch (JsonProcessingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return array;
+    }
+
+}
+
+
+package com.boa.training.sender;
+
+import java.util.List;
+import java.util.Properties;
+
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.serialization.StringSerializer;
+
+import com.boa.training.domain.Account;
+import com.boa.training.serializer.AccountSerializer;
+
+public class AccountSenderTest {
+
+    public static void main(String[] args) {
+        // TODO Auto-generated method stub
+        
+        Properties props=new Properties();
+        props.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        props.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        props.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, AccountSerializer.class.getName());
+        
+        KafkaProducer<String, Account> producer=new KafkaProducer<String, Account>(props);
+        int customerId=23444;
+        for(int i=10001;i<=10010;i++){
+            Account account=new Account(i, customerId, "SB");
+            ProducerRecord<String, Account> record=new ProducerRecord<String, Account>("account-topic", "sb",account);
+            producer.send(record);
+            customerId++;
+        }
+        customerId=542322;
+        for(int i=10011;i<=10020;i++){
+            Account account=new Account(i, customerId, "Loan");
+            ProducerRecord<String, Account> record=new ProducerRecord<String, Account>("account-topic", "loan",account);
+            producer.send(record);
+            customerId++;
+        }
+
+        
+        customerId=982322;
+        for(int i=10021;i<=10030;i++){
+            Account account=new Account(i, customerId, "CA");
+            ProducerRecord<String, Account> record=new ProducerRecord<String, Account>("account-topic", "ca",account);
+            producer.send(record);
+            customerId++;
+        }
+        System.out.println("messages sent");
+        producer.close();
+        
+    }
+
+}
+
+package com.boa.training.deserializer;
+
+import java.io.IOException;
+
+import org.apache.kafka.common.serialization.Deserializer;
+
+import com.boa.training.domain.Account;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+public class AccountDeserializer implements Deserializer<Account> {
+
+	private ObjectMapper mapper=new ObjectMapper();
+
+	@Override
+	public Account deserialize(String topic, byte[] data) {
+		Account account=null;
+		System.out.println("Deserializing "+new String(data));
+		try {
+			account=mapper.readValue(data, Account.class);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return account;
+	}
+
+}
+
+package com.boa.training.receiver;
+
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.serialization.StringDeserializer;
+
+import com.boa.training.deserializer.AccountDeserializer;
+import com.boa.training.domain.Account;
+
+
+
+public class AccountReceiverTest {
+
+    public static void main(String[] args) {
+        // TODO Auto-generated method stub
+        
+        Properties props=new Properties();
+        props.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        props.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        props.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, AccountDeserializer.class.getName());
+        props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "first-group");
+        KafkaConsumer<String, Account> consumer=new KafkaConsumer<String, Account>(props);
+        List<String> topics=new ArrayList<String>();
+        topics.add("account-topic");
+        consumer.subscribe(topics);
+        System.out.println("waiting for messages");
+        while(true){
+            ConsumerRecords<String, Account> records=consumer.poll(Duration.ofSeconds(5));
+            for(ConsumerRecord<String, Account> record:records){
+                System.out.println("partition: "+record.partition()+" key: "+record.key());
+                Account account=record.value();
+                System.out.println("Account No: "+account.getAccNo());
+                System.out.println("Customer Id: "+account.getCustomerId());
+                System.out.println("Account Type: "+account.getAccType());
+                
+            }
+        }
+        
+    }
+
+}
+
+package com.boa.training.paritioner;
+
+import java.util.Map;
+
+import org.apache.kafka.clients.producer.Partitioner;
+import org.apache.kafka.common.Cluster;
+
+import com.boa.training.domain.Account;
+
+public class AccountPartitioner implements Partitioner {
+
+    @Override
+    public void configure(Map<String, ?> arg0) {
+        
+    }
+
+    @Override
+    public void close() {
+        
+    }
+
+    @Override
+    public int partition(String topic, Object key, byte[] keyBytes, Object value,
+            byte[] valueBytes, Cluster cluster) {
+        Account account=(Account)value;
+        int partition=4;
+        if(account.getAccType().equals("SB")){
+            partition=0;
+        }
+        else if(account.getAccType().equals("RD")){
+            partition=1;
+        }
+        else if(account.getAccType().equals("CA")){
+            partition=2;
+        }
+        else if(account.getAccType().equals("Loan")){
+            partition=3;
+        }
+        return partition;
+    }
+
+}
+
+
+package com.boa.training.receiver;
+
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.TopicPartition;
+import org.apache.kafka.common.serialization.StringDeserializer;
+
+import com.boa.training.deserializer.AccountDeserializer;
+import com.boa.training.domain.Account;
+
+public class AccountReceiverFromSpecificPartitionTest {
+
+    public static void main(String[] args) {
+        // TODO Auto-generated method stub
+        
+        Properties props=new Properties();
+        props.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        props.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        props.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, AccountDeserializer.class.getName());
+        props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "first-group");
+        //  props.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+                
+        KafkaConsumer<String, Account> consumer=new KafkaConsumer<String, Account>(props);
+        List<TopicPartition> topicPartitions=new ArrayList<TopicPartition>();
+        topicPartitions.add(new TopicPartition("account-topic", Integer.parseInt(args[0])));
+        consumer.assign(topicPartitions);
+        System.out.println("waiting for messages");
+        while(true){
+            ConsumerRecords<String, Account> records=consumer.poll(Duration.ofSeconds(5));
+            for(ConsumerRecord<String, Account> record:records){
+                System.out.println("partition: "+record.partition()+" key: "+record.key());
+                Account account=record.value();
+                System.out.println("Account No: "+account.getAccNo());
+                System.out.println("Customer Id: "+account.getCustomerId());
+                System.out.println("Account Type: "+account.getAccType());
+                
+            }
+        }
+        
+    }
+
+}
+
+
+package com.boa.training.receiver;
+
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.TopicPartition;
+import org.apache.kafka.common.serialization.StringDeserializer;
+
+
+
+public class ReceiverFromSpecificPartitionTest {
+
+    public static void main(String[] args) {
+        // TODO Auto-generated method stub
+        
+        Properties props=new Properties();
+        props.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        props.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        props.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "first-group");
+        KafkaConsumer<String, String> consumer=new KafkaConsumer<String, String>(props);
+        List<TopicPartition> list=new ArrayList<TopicPartition>();
+        TopicPartition topicPartition=new TopicPartition("first-topic", Integer.parseInt(args[0]));
+        list.add(topicPartition);
+        consumer.assign(list);
+        consumer.seek(topicPartition, 0);
+        System.out.println("waiting for messages");
+        while(true){
+            ConsumerRecords<String, String> records=consumer.poll(Duration.ofSeconds(5));
+            for(ConsumerRecord<String, String> record:records){
+                System.out.println("partition: "+record.partition()+" offset: "+record.offset()+" key: "+record.key()+" payload:"+ record.value());
+                
+            }
+        }
+        
+    }
+
+}
+
+package com.boa.training.sender;
+
+import java.util.Properties;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.common.serialization.StringSerializer;
+
+
+
+
+
+public class SynchronousSender {
+
+    public static void main(String[] args) {
+        // TODO Auto-generated method stub
+        
+        Properties props=new Properties();
+        props.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        props.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        props.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        
+        KafkaProducer<String, String> producer=new KafkaProducer<String, String>(props);
+        String topic="first-topic";
+        
+        
+        String key= "test-msg";
+        
+        for(int i=1;i<=10;i++){
+            ProducerRecord<String, String> record=new ProducerRecord<String, String>(topic, key, "This is test message "+i);
+            System.out.println("sending the message "+i);
+            Future<RecordMetadata> future=producer.send(record);
+            try {
+                RecordMetadata rmd=future.get();
+                System.out.println("message published to "+rmd.partition()+" at offset "+rmd.offset());
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+            //producer.send(record, new MyCallback(key));
+            
+        }
+        
+        producer.close();
+    }
+
+}
+
+package com.boa.training.sender;
+
+import java.io.File;
+import java.util.List;
+import java.util.Properties;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.serialization.StringSerializer;
+
+import com.boa.training.domain.Account;
+import com.boa.training.paritioner.AccountPartitioner;
+import com.boa.training.serializer.AccountSerializer;
+
+public class AccountXMLSenderTest {
+
+	public static void main(String[] args) {
+				
+		Properties props=new Properties();
+		props.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+		props.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+		props.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, AccountSerializer.class.getName());
+		props.setProperty(ProducerConfig.PARTITIONER_CLASS_CONFIG, AccountPartitioner.class.getName());
+		
+		
+		KafkaProducer<String, Account> producer=new KafkaProducer<String, Account>(props);
+		Account account=readFromFile();
+		ProducerRecord<String, Account> record=new ProducerRecord<String, Account>("account-topic", "", account);
+		producer.send(record);
+		System.out.println("message sent");
+		producer.close();
+		
+	}
+	
+	static Account readFromFile()
+	{
+		Account account=null;
+		try {
+			JAXBContext context=JAXBContext.newInstance(Account.class);
+			Unmarshaller unmarshaller=context.createUnmarshaller();
+			account=(Account) unmarshaller.unmarshal(new File("account.xml"));
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
+		return account;
+		
+	}
+
+}
+
+
+package com.boa.training.sender;
+
+import java.io.File;
+import java.util.List;
+import java.util.Properties;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.serialization.StringSerializer;
+
+import com.boa.training.domain.Account;
+import com.boa.training.paritioner.AccountPartitioner;
+import com.boa.training.serializer.AccountSerializer;
+
+public class AccountXMLSenderTest {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+		Properties props=new Properties();
+		props.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+		props.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+		props.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, AccountSerializer.class.getName());
+		props.setProperty(ProducerConfig.PARTITIONER_CLASS_CONFIG, AccountPartitioner.class.getName());
+		
+		
+		KafkaProducer<String, Account> producer=new KafkaProducer<String, Account>(props);
+		Account account=readFromFile();
+		ProducerRecord<String, Account> record=new ProducerRecord<String, Account>("account-topic", "", account);
+		producer.send(record);
+		System.out.println("message sent");
+		producer.close();
+		
+	}
+	
+	static Account readFromFile()
+	{
+		Account account=null;
+		try {
+			JAXBContext context=JAXBContext.newInstance(Account.class);
+			Unmarshaller unmarshaller=context.createUnmarshaller();
+			account=(Account) unmarshaller.unmarshal(new File("account.xml"));
+		} catch (JAXBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return account;
+		
+	}
+
+}
