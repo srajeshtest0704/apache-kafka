@@ -78,6 +78,28 @@ kafka-console-consumer.bat --topic first-topic --bootstrap-server localhost:9092
 
 kafka-console-consumer.bat --group test-group --topic first-topic --bootstrap-server localhost:9092 --property print.key=true
 
+file 
+
+D:\rajesh\kafka_2.12-2.3.1>bin\windows\connect-standalone.bat config\connect-standalone.properties config\connect-file-source.properties
+
+bin\windows\connect-standalone.bat config\connect-standalone.properties config\connect-file-source.properties
+
+bin\windows\connect-standalone.bat config\connect-standalone.properties config\connect-file-source.properties config\connect-file-sink.properties
+
+kafka-console-consumer.bat --topic topic-file-connect --bootstrap-server localhost:9092
+
+D:\rajesh\kafka_2.12-2.3.1\bin\windows>kafka-console-consumer.bat --topic topic-file-connect --bootstrap-server localhost:9092
+Processed a total of 0 messages
+Terminate batch job (Y/N)? y
+
+D:\rajesh\kafka_2.12-2.3.1\bin\windows>kafka-console-consumer.bat --topic topic-file-connect --bootstrap-server localhost:9092 --from-beginning
+{"schema":{"type":"string","optional":false},"payload":"this is a test file "}
+{"schema":{"type":"string","optional":false},"payload":"thank you"}
+{"schema":{"type":"string","optional":false},"payload":"Hllow"}
+{"schema":{"type":"string","optional":false},"payload":""}
+{"schema":{"type":"string","optional":false},"payload":"htiahh"}
+{"schema":{"type":"string","optional":false},"payload":""}
+
 https://paste.ubuntu.com/p/qdKjWK5XZy/
 
 6th generation
@@ -176,4 +198,263 @@ Option                                   Description
 										   
 
 \\192.168.20.93\oracle
+
+D:/rajesh/kafka_2.12-2.3.1/
+
+root
+
+mysql> desc account;
++--------------+---------------+------+-----+---------+----------------+
+| Field        | Type          | Null | Key | Default | Extra          |
++--------------+---------------+------+-----+---------+----------------+
+| account_no   | int(11)       | NO   | PRI | NULL    | auto_increment |
+| customer_id  | int(11)       | YES  |     | NULL    |                |
+| account_type | varchar(25)   | YES  |     | NULL    |                |
+| balance      | decimal(10,2) | YES  |     | NULL    |                |
++--------------+---------------+------+-----+---------+----------------+
+4 rows in set (0.01 sec)
+
+INSERT INTO account (account_no, customer_id, account_type, balance) VALUES (100001, 12345, "SB", 145689.10);
+INSERT INTO account (customer_id, account_type, balance) VALUES (12346, "LA", 155689.10);
+INSERT INTO account (customer_id, account_type, balance) VALUES (12347, "CA", 165689.10);
+INSERT INTO account (customer_id, account_type, balance) VALUES (12348, "RD", 175689.10);
+
+connection.url=jdbc:mysql://hostname:3306/boakafkatrainingdb?user=root&password=root
+mode=incrementing
+incrementing.column.name=account_no
+topic.prefix=topic-mysql-
+table.whitelist=account_tbl
+
+VM
+
+drwxrwxrwx.  4 root  root    75 Nov 27 16:13 Kafka
+drwx------. 19 kafka kafka 4096 Nov 27 16:18 ..
+[kafka@localhost Desktop]$ cd ..
+[kafka@localhost ~]$ cd ~/Desktop/
+Kafka/            Old Firefox Data/ 
+[kafka@localhost ~]$ cd ~/Desktop/
+Kafka/            Old Firefox Data/ 
+[kafka@localhost ~]$ cd ~/Desktop/
+[kafka@localhost Desktop]$ ls -ltra
+total 4
+drwxr-xr-x.  4 kafka kafka   43 Nov 24 12:12 .
+drwx------.  3 kafka kafka   30 Nov 24 12:12 Old Firefox Data
+drwxrwxrwx.  4 root  root    75 Nov 27 16:13 Kafka
+drwx------. 19 kafka kafka 4096 Nov 27 16:18 ..
+[kafka@localhost Desktop]$ cd Kafka/
+[kafka@localhost Kafka]$ ls -ltra
+total 778784
+drwxr-xr-x. 7 kafka kafka        77 Sep  5 01:02 confluent-5.3.1
+drwxr-xr-x. 4 kafka kafka        43 Nov 24 12:12 ..
+-rw-------. 1 kafka kafka 797471754 Nov 24 12:44 confluent-5.3.1-2.12.tar.gz
+drwxrwxrwx. 4 root  root         75 Nov 27 16:13 .
+drwxrwxrwx. 3 root  root         64 Nov 27 16:16 Old
+[kafka@localhost Kafka]$ cd Old/confluent-5.1.0/
+[kafka@localhost confluent-5.1.0]$ ls -ltra
+total 12
+drwxr-xr-x.  3 kafka kafka   21 Dec 15  2018 lib
+drwxr-xr-x.  7 kafka kafka  106 Dec 15  2018 share
+drwxr-xr-x. 23 kafka kafka 4096 Dec 15  2018 etc
+drwxr-xr-x.  3 kafka kafka 4096 Dec 15  2018 bin
+drwxr-xr-x.  2 kafka kafka  179 Dec 15  2018 src
+-rw-r--r--.  1 kafka kafka  871 Dec 15  2018 README
+drwxr-xr-x.  7 kafka kafka   77 Dec 15  2018 .
+drwxrwxrwx.  3 root  root    64 Nov 27 16:16 ..
+[kafka@localhost confluent-5.1.0]$ clear
+
+[kafka@localhost confluent-5.1.0]$ ls 
+bin  etc  lib  README  share  src
+[kafka@localhost confluent-5.1.0]$ pwd
+/home/kafka/Desktop/Kafka/Old/confluent-5.1.0
+[kafka@localhost confluent-5.1.0]$ 
+[kafka@localhost confluent-5.1.0]$ cd bin/
+[kafka@localhost bin]$ sudo ./confluent start
+[sudo] password for kafka: 
+This CLI is intended for development only, not for production
+https://docs.confluent.io/current/cli/index.html
+
+Using CONFLUENT_CURRENT: /tmp/confluent.PN3Stqv5
+Starting zookeeper
+zookeeper is [UP]
+Starting kafka
+kafka is [UP]
+Starting schema-registry
+schema-registry is [UP]
+Starting kafka-rest
+kafka-rest is [UP]
+Starting connect
+connect is [UP]
+Starting ksql-server
+ksql-server is [UP]
+Starting control-center
+control-center is [UP]
+[kafka@localhost bin]$ pwd
+/home/kafka/Desktop/Kafka/Old/confluent-5.1.0/bin
+
+[kafka@localhost kafka-connect-jdbc]$ pwd
+/home/kafka/Desktop/Kafka/Old/confluent-5.1.0/etc/kafka-connect-jdbc
+
+start all the services
+
+[kafka@localhost bin]$ sudo ./confluent start
+
+stop all the services
+
+[kafka@localhost bin]$ sudo ./confluent stop
+
+start a specific service
+
+[kafka@localhost bin]$ sudo ./confluent start schema-registry
+
+[kafka@localhost bin]$ sudo ./confluent start <service-name>
+
+[kafka@localhost confluent-5.1.0]$ bin/connect-standalone etc/schema-registry/connect-avro-standalone.properties etc/kafka-connect-jdbc/source-connector-mysql.properties
+
+kafka@localhost bin]$ sudo ./kafka-topics --list --zookeeper localhost:2181
+
+[kafka@localhost bin]$ sudo ./kafka-topics --list --zookeeper localhost:2181
+
+[kafka@localhost bin]$ sudo ./kafka-avro-console-consumer --topic topic-mysql-account --bootstrap-server localhost:9092 --from-beginning
+
+cassandra
+
+server
+
+[kafka@localhost interface]$ cd ..
+[kafka@localhost apache-cassandra-3.11.5]$ cls
+bash: cls: command not found...
+[kafka@localhost apache-cassandra-3.11.5]$ clear
+[kafka@localhost apache-cassandra-3.11.5]$ cd bin/
+[kafka@localhost bin]$ ./cassandra 
+
+client
+
+[kafka@localhost bin]$ ./cqlsh
+Connected to Test Cluster at 127.0.0.1:9042.
+[cqlsh 5.0.1 | Cassandra 3.11.5 | CQL spec 3.4.4 | Native protocol v4]
+Use HELP for help.
+cqlsh> help
+
+Documented shell commands:
+===========================
+CAPTURE  CLS          COPY  DESCRIBE  EXPAND  LOGIN   SERIAL  SOURCE   UNICODE
+CLEAR    CONSISTENCY  DESC  EXIT      HELP    PAGING  SHOW    TRACING
+
+CQL help topics:
+================
+AGGREGATES               CREATE_KEYSPACE           DROP_TRIGGER      TEXT     
+ALTER_KEYSPACE           CREATE_MATERIALIZED_VIEW  DROP_TYPE         TIME     
+ALTER_MATERIALIZED_VIEW  CREATE_ROLE               DROP_USER         TIMESTAMP
+ALTER_TABLE              CREATE_TABLE              FUNCTIONS         TRUNCATE 
+ALTER_TYPE               CREATE_TRIGGER            GRANT             TYPES    
+ALTER_USER               CREATE_TYPE               INSERT            UPDATE   
+APPLY                    CREATE_USER               INSERT_JSON       USE      
+ASCII                    DATE                      INT               UUID     
+BATCH                    DELETE                    JSON            
+BEGIN                    DROP_AGGREGATE            KEYWORDS        
+BLOB                     DROP_COLUMNFAMILY         LIST_PERMISSIONS
+BOOLEAN                  DROP_FUNCTION             LIST_ROLES      
+COUNTER                  DROP_INDEX                LIST_USERS      
+CREATE_AGGREGATE         DROP_KEYSPACE             PERMISSIONS     
+CREATE_COLUMNFAMILY      DROP_MATERIALIZED_VIEW    REVOKE          
+CREATE_FUNCTION          DROP_ROLE                 SELECT          
+CREATE_INDEX             DROP_TABLE                SELECT_JSON     
+
+keyspace is like a table
+
+cqlsh> create keyspace kafkatraining_keyspace with replication={'class':'SimpleStrategy', 'replication_factor':1};
+
+cqlsh> describe tables;
+
+https://docs.confluent.io/current/connect/kafka-connect-jdbc/source-connector/index.html
+
+http://cassandra.apache.org/download/
+
+https://lenses.io/connect/kafka-to-cassandra/
+
+http://docs.lenses.io/connectors/sink/cassandra.html
+
+http://itechseeker.com/en/tutorials-2/apache-cassandra/connecting-kafka-to-cassandra-sink/
+
+https://drive.google.com/file/d/1xK4yv6Z1kNxHgnZKJFGmRbG34ToP2tht/view?usp=sharing
+
+http://collabedit.com/xhtpe
+
+cqlsh> describe tables;
+
+Keyspace system_schema
+----------------------
+tables     triggers    views    keyspaces  dropped_columns
+functions  aggregates  indexes  types      columns        
+
+Keyspace system_auth
+--------------------
+resource_role_permissons_index  role_permissions  role_members  roles
+
+Keyspace system
+---------------
+available_ranges          peers               batchlog        transferred_ranges
+batches                   compaction_history  size_estimates  hints             
+prepared_statements       sstable_activity    built_views   
+"IndexInfo"               peer_events         range_xfers   
+views_builds_in_progress  paxos               local         
+
+Keyspace system_distributed
+---------------------------
+repair_history  view_build_status  parent_repair_history
+
+Keyspace system_traces
+----------------------
+events  sessions
+
+Keyspace kafkatraining_keyspace
+-------------------------------
+<empty>
+
+cqlsh> use kafkatraining_keyspace
+   ... ;
+cqlsh:kafkatraining_keyspace> create table account (account_no int primary_key, customer_id text, acc_type text);
+SyntaxException: line 1:37 no viable alternative at input 'primary_key' (create table account (account_no [int] primary_key...)
+cqlsh:kafkatraining_keyspace> create table account (account_no int primary key, customer_id text, acc_type text);
+cqlsh:kafkatraining_keyspace> show tables;
+Improper show command.
+cqlsh:kafkatraining_keyspace> describe kafkatraining_keyspace
+
+CREATE KEYSPACE kafkatraining_keyspace WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'}  AND durable_writes = true;
+
+CREATE TABLE kafkatraining_keyspace.account (
+    account_no int PRIMARY KEY,
+    acc_type text,
+    customer_id text
+) WITH bloom_filter_fp_chance = 0.01
+    AND caching = {'keys': 'ALL', 'rows_per_partition': 'NONE'}
+    AND comment = ''
+    AND compaction = {'class': 'org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy', 'max_threshold': '32', 'min_threshold': '4'}
+    AND compression = {'chunk_length_in_kb': '64', 'class': 'org.apache.cassandra.io.compress.LZ4Compressor'}
+    AND crc_check_chance = 1.0
+    AND dclocal_read_repair_chance = 0.1
+    AND default_time_to_live = 0
+    AND gc_grace_seconds = 864000
+    AND max_index_interval = 2048
+    AND memtable_flush_period_in_ms = 0
+    AND min_index_interval = 128
+    AND read_repair_chance = 0.0
+    AND speculative_retry = '99PERCENTILE';
+
+cqlsh:kafkatraining_keyspace> 
+
+[kafka@localhost confluent-5.1.0]$ bin/connect-standalone etc/schema-registry/connect-avro-standalone.properties etc/kafka-connect-jdbc/source-connector-mysql.properties etc/kafka-connect-cassandra/sink-connect-cassandra.properties
+
+cqlsh:kafkatraining_keyspace> drop table account;
+cqlsh:kafkatraining_keyspace> create table account (account_no int primary key, customer_id int, acc_type text);
+cqlsh:kafkatraining_keyspace> select * from account;
+
+
+D:\rajesh\kafka_2.12-2.3.1>bin\windows\connect-standalone.bat config\connect-standalone.properties config\source-connector-mysql.properties config\connect-file-sink.properties
+
+bin\windows\connect-standalone.bat config\connect-standalone.properties config\source-connector-mysql.properties config\connect-file-sink.properties
+
+
+
+
 
