@@ -85,6 +85,8 @@ kafka-console-consumer.bat --group test-group --topic first-topic --bootstrap-se
 
 kafka-console-consumer.bat --topic kafka-ssl-topic --bootstrap-server localhost:9093 --consumer.config D:\rajesh\kafka-ssl-client\kafka-client.properties --from-beginning
 
+kafka-console-producer.bat --topic kafka-ssl-topic --broker-list localhost:9093 --producer.config D:\rajesh\kafka-ssl-client\kafka-client.properties
+
 file 
 
 D:\rajesh\kafka_2.12-2.3.1>bin\windows\connect-standalone.bat config\connect-standalone.properties config\connect-file-source.properties
@@ -804,3 +806,185 @@ openssl s_client -debug -connect localhost:9093 -tls1
 kafka-console-consumer.bat --topic kafka-ssl-topic --bootstrap-server locahost:9093 --consumer.config D:\rajesh\kafka-ssl-client\kafka-client.properties --from-beginning
 
 kafka-console-consumer.bat --topic kafka-ssl-topic --bootstrap-server locahost:9093 --consumer.config D:\rajesh\kafka-ssl-client\kafka-client.properties --from-beginning
+
+[kafka@localhost bin]$ sudo ./confluent start ksql-server
+
+curl -X POST -H "Content-Type: application/vnd.kafka.avro.v1+json" \
+      --data '{"value_schema": "{\"type\": \"record\", \"name\": \"User\", \"fields\": [{\"name\": \"name\", \"type\": \"string\"}]}", "records": [{"value": {"name": "testUser"}}]}' \
+      "http://localhost:8082/topics/avrotest"
+  {"offsets":[{"partition":0,"offset":0,"error_code":null,"error":null}],"key_schema_id":null,"value_schema_id":21}
+
+
+curl -X POST -H "Content-Type: application/vnd.kafka.json.v1+json" \
+      -H "Accept: application/vnd.kafka.json.v1+json" --data '{"records":[{"value":{"Id":"1", "name":"Rajesh"}}]}' "http://localhost:8082/topics/jsontest"
+  {"offsets":[{"partition":0,"offset":0,"error_code":null,"error":null}],"key_schema_id":null,"value_schema_id":null}
+
+
+curl -X POST -H "Content-Type: application/vnd.kafka.json.v2+json" -H "Accept: application/vnd.kafka.v2+json" --data '{"records":[{"value":{"empId":1002,"name":"Deva","designation":"Developer"}}]}' http://localhost:8082/topics/test-rest-topic
+
+./kafka-topics --create --topic topic1 --partitions 5 --replication-factor 1 --zookeeper localhost:2181
+
+[kafka@localhost bin]$ pwd
+/home/kafka/Desktop/Kafka/Old/confluent-5.1.0/bin
+
+[kafka@localhost bin]$ ./kafka-topics --list --zookeeper localhost:2181
+
+[kafka@localhost bin]$ ./ksql
+OpenJDK 64-Bit Server VM warning: If the number of processors is expected to increase from one, then you should configure the number of parallel GC threads appropriately using -XX:ParallelGCThreads=N
+                  
+                  ===========================================
+                  =        _  __ _____  ____  _             =
+                  =       | |/ // ____|/ __ \| |            =
+                  =       | ' /| (___ | |  | | |            =
+                  =       |  <  \___ \| |  | | |            =
+                  =       | . \ ____) | |__| | |____        =
+                  =       |_|\_\_____/ \___\_\______|       =
+                  =                                         =
+                  =  Streaming SQL Engine for Apache Kafka® =
+                  ===========================================
+
+Copyright 2017-2018 Confluent Inc.
+
+CLI v5.1.0, Server v5.1.0 located at http://localhost:8088
+
+Having trouble? Type 'help' (case-insensitive) for a rundown of how things work!
+
+ksql> create stream test1 (name varchar, country varchar);
+
+
+
+drwxrwxrwx.  4 root  root    75 Nov 27 16:13 Kafka
+drwx------. 19 kafka kafka 4096 Nov 27 16:18 ..
+[kafka@localhost Desktop]$ cd ..
+[kafka@localhost ~]$ cd ~/Desktop/
+Kafka/            Old Firefox Data/ 
+[kafka@localhost ~]$ cd ~/Desktop/
+Kafka/            Old Firefox Data/ 
+[kafka@localhost ~]$ cd ~/Desktop/
+[kafka@localhost Desktop]$ ls -ltra
+total 4
+drwxr-xr-x.  4 kafka kafka   43 Nov 24 12:12 .
+drwx------.  3 kafka kafka   30 Nov 24 12:12 Old Firefox Data
+drwxrwxrwx.  4 root  root    75 Nov 27 16:13 Kafka
+drwx------. 19 kafka kafka 4096 Nov 27 16:18 ..
+[kafka@localhost Desktop]$ cd Kafka/
+[kafka@localhost Kafka]$ ls -ltra
+total 778784
+drwxr-xr-x. 7 kafka kafka        77 Sep  5 01:02 confluent-5.3.1
+drwxr-xr-x. 4 kafka kafka        43 Nov 24 12:12 ..
+-rw-------. 1 kafka kafka 797471754 Nov 24 12:44 confluent-5.3.1-2.12.tar.gz
+drwxrwxrwx. 4 root  root         75 Nov 27 16:13 .
+drwxrwxrwx. 3 root  root         64 Nov 27 16:16 Old
+[kafka@localhost Kafka]$ cd Old/confluent-5.1.0/
+[kafka@localhost confluent-5.1.0]$ ls -ltra
+total 12
+drwxr-xr-x.  3 kafka kafka   21 Dec 15  2018 lib
+drwxr-xr-x.  7 kafka kafka  106 Dec 15  2018 share
+drwxr-xr-x. 23 kafka kafka 4096 Dec 15  2018 etc
+drwxr-xr-x.  3 kafka kafka 4096 Dec 15  2018 bin
+drwxr-xr-x.  2 kafka kafka  179 Dec 15  2018 src
+-rw-r--r--.  1 kafka kafka  871 Dec 15  2018 README
+drwxr-xr-x.  7 kafka kafka   77 Dec 15  2018 .
+drwxrwxrwx.  3 root  root    64 Nov 27 16:16 ..
+[kafka@localhost confluent-5.1.0]$ clear
+
+[kafka@localhost confluent-5.1.0]$ ls 
+bin  etc  lib  README  share  src
+[kafka@localhost confluent-5.1.0]$ pwd
+/home/kafka/Desktop/Kafka/Old/confluent-5.1.0
+[kafka@localhost confluent-5.1.0]$ 
+[kafka@localhost confluent-5.1.0]$ cd bin/
+[kafka@localhost bin]$ sudo ./confluent start
+[sudo] password for kafka: 
+This CLI is intended for development only, not for production
+https://docs.confluent.io/current/cli/index.html
+
+Using CONFLUENT_CURRENT: /tmp/confluent.PN3Stqv5
+Starting zookeeper
+zookeeper is [UP]
+Starting kafka
+kafka is [UP]
+Starting schema-registry
+schema-registry is [UP]
+Starting kafka-rest
+kafka-rest is [UP]
+Starting connect
+connect is [UP]
+Starting ksql-server
+ksql-server is [UP]
+Starting control-center
+control-center is [UP]
+[kafka@localhost bin]$ pwd
+/home/kafka/Desktop/Kafka/Old/confluent-5.1.0/bin
+
+connection.url="jdbc:mysql://127.0.0.1:3306/sample?verifyServerCertificate=false&useSSL=true&requireSSL=true"
+
+connection.url=jdbc:mysql://127.0.0.1:3306/trainingdb?verifyServerCertificate=false&useSSL=true&requireSSL=true
+
+connection.url=jdbc:mysql://hostname:3306/boakafkatrainingdb?user=root&password=root
+mode=incrementing
+incrementing.column.name=account_no
+topic.prefix=topic-mysql-
+table.whitelist=account_tbl
+
+connection.url=jdbc:mysql://hostname:3306/trainingdb
+connection.user=root
+connection.password=root
+mode=incrementing
+incrementing.column.name=account_no
+
+https://paste.ubuntu.com/p/c9CPXqVtgy/
+
+connection.url=jdbc:mysql://192.168.20.153:3306/trainingdb
+
+topic-mysql-account
+
+
+[kafka@localhost bin]$ sudo ./kafka-avro-console-consumer --topic topic-mysql-account --bootstrap-server localhost:9092 --from-beginning
+
+
+name=cassandra-sink-account
+connector.class=com.datamountaineer.streamreactor.connect.cassandra.sink.CassandraSinkConnector
+tasks.max=1
+topics=topic-mysql-account
+connect.cassandra.kcql=INSERT INTO account select account_no,customer_id,account_type as acc_type from topic-mysql-account
+connect.cassandra.contact.points=localhost
+connect.cassandra.port=9042
+connect.cassandra.key.space=kafkatraining_keyspace
+connect.cassandra.username=cassandra
+connect.cassandra.password=cassandra
+
+#
+# Copyright 2018 Confluent Inc.
+#
+# Licensed under the Confluent Community License; you may not use this file
+# except in compliance with the License.  You may obtain a copy of the License at
+#
+# http://www.confluent.io/confluent-community-license
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OF ANY KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations under the License.
+#
+
+# A simple example that copies all tables from a SQLite database. The first few settings are
+# required for all connectors: a name, the connector class to run, and the maximum number of
+# tasks to create:
+name=mysql-source-jdbc-increment-mode
+connector.class=io.confluent.connect.jdbc.JdbcSourceConnector
+tasks.max=1
+# The remaining configs are specific to the JDBC source connector. In this example, we connect to a
+# SQLite database stored in the file test.db, use and auto-incrementing column called 'id' to
+# detect new rows as they are added, and output to topics prefixed with 'test-sqlite-jdbc-', e.g.
+# a table called 'users' will be written to the topic 'test-sqlite-jdbc-users'.
+connection.url=jdbc:mysql://192.168.20.153:3306/trainingdb
+connection.user=root
+connection.password=root
+mode=incrementing
+incrementing.column.name=account_no
+topic.prefix=topic-mysql-
+table.whitelist=account
+
+http://itechseeker.com/en/tutorials-2/apache-cassandra/connecting-kafka-to-cassandra-sink/
+

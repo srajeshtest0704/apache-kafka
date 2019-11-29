@@ -1395,3 +1395,154 @@ public class SecureSender {
 	}
 
 }
+
+<repositories>
+   <repository>
+            <id>confluent</id>
+            <url>http://packages.confluent.io/maven/</url>
+        </repository>
+  </repositories>
+  <dependencies>
+  <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-avro-serializer</artifactId>
+            <version>3.1.1</version>
+        </dependency>
+        
+        <dependency>
+    <groupId>org.apache.kafka</groupId>
+    <artifactId>kafka_2.12</artifactId>
+    <version>2.1.1</version>
+</dependency>
+  </dependencies>
+
+public class Customer {
+	private int id;
+	private String name;
+	private String email;
+	public Customer(int id, String name, String email) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.email = email;
+	}
+	public Customer() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+}
+
+package com.boa.training.avro;
+
+import java.util.Properties;
+
+import org.apache.avro.Schema;
+import org.apache.avro.generic.GenericData;
+import org.apache.avro.generic.GenericRecord;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
+
+
+public class Sender {
+public static void main(String[] args) {
+	Properties props = new Properties();
+	props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+	props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
+	"io.confluent.kafka.serializers.KafkaAvroSerializer");
+	props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
+	"io.confluent.kafka.serializers.KafkaAvroSerializer");
+	props.put("schema.registry.url", "http://localhost:8081");
+	String schemaString = "{\"namespace\": \"customerManagement.avro\","+
+	"\"type\": \"record\", " +
+	"\"name\": \"Customer\"," +
+	"\"fields\": [" +
+	"{\"name\": \"id\", \"type\": \"int\"}," +
+	"{\"name\": \"name\", \"type\": \"string\"}," +
+	"{\"name\": \"email\", \"type\": \"string\" }" +
+	"]}";
+	Producer<String, GenericRecord> producer =
+	new KafkaProducer<String, GenericRecord>(props);
+	Schema.Parser parser = new Schema.Parser();
+	Schema schema = parser.parse(schemaString);
+	for (int nCustomers = 0; nCustomers < 5; nCustomers++) {
+	String name = "exampleCustomer" + nCustomers;
+	String email = "example " + nCustomers + "@example.com";
+	GenericRecord customer = new GenericData.Record(schema);
+	customer.put("id", nCustomers);
+	customer.put("name", name);
+	customer.put("email", email);
+	ProducerRecord<String, GenericRecord> data =
+	new ProducerRecord<String,
+	GenericRecord>("customerContacts",	name, customer);
+	producer.send(data);
+}
+	producer.close();
+}
+}
+
+import java.io.IOException;
+import java.time.Duration;
+import java.util.Collections;
+import java.util.Properties;
+
+import org.apache.avro.generic.GenericRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+
+public class Receiver {
+	public static void main(String[] args) throws JsonParseException, JsonMappingException, IOException {
+		
+			Properties props = new Properties();
+			props.put("bootstrap.servers", "localhost:9092");
+			props.put("group.id", "CountryCounter");
+			props.put("key.deserializer",
+			"org.apache.kafka.common.serialization.StringDeserializer");
+			props.put("value.deserializer",
+			"io.confluent.kafka.serializers.KafkaAvroDeserializer");
+			props.put("schema.registry.url", "http://localhost:8081");
+			String topic = "customerContacts";
+			KafkaConsumer consumer = new
+			KafkaConsumer(props);
+			consumer.subscribe(Collections.singletonList(topic));
+			System.out.println("Reading topic:" + topic);
+			while (true) {
+			ConsumerRecords<String, GenericRecord> records =
+			consumer.poll(Duration.ofMinutes(2));
+			for (ConsumerRecord<String, GenericRecord> record: records) {
+				ObjectMapper mapper=new ObjectMapper();
+				Customer c=mapper.readValue(record.value().toString().getBytes(), Customer.class);
+			System.out.println("Current customer name is: " +
+			c.getName());
+			}
+			
+			}
+	}
+
+}
