@@ -1,0 +1,488 @@
+Microsoft Windows [Version 10.0.18362.476]
+(c) 2019 Microsoft Corporation. All rights reserved.
+
+D:\rajesh\kafka-ssl>keytool -keystore server.keystore.jks -alias localhost -validity 365 -genkey -keyalg RSA
+Enter keystore password:
+Re-enter new password:
+What is your first and last name?
+  [Unknown]:  rajesh
+What is the name of your organizational unit?
+  [Unknown]:  training
+What is the name of your organization?
+  [Unknown]:  rps
+What is the name of your City or Locality?
+  [Unknown]:  hyderabad
+What is the name of your State or Province?
+  [Unknown]:  telangana
+What is the two-letter country code for this unit?
+  [Unknown]:  IN
+Is CN=rajesh, OU=training, O=rps, L=hyderabad, ST=telangana, C=IN correct?
+  [no]:  yes
+
+Enter key password for <localhost>
+        (RETURN if same as keystore password):
+
+Warning:
+The JKS keystore uses a proprietary format. It is recommended to migrate to PKCS12 which is an industry standard format using "keytool -importkeystore -srckeystore server.keystore.jks -destkeystore server.keystore.jks -deststoretype pkcs12".
+
+D:\rajesh\kafka-ssl>dir
+ Volume in drive D is Backup
+ Volume Serial Number is 7678-30A3
+
+ Directory of D:\rajesh\kafka-ssl
+
+29-11-2019  11:55    <DIR>          .
+29-11-2019  11:55    <DIR>          ..
+29-11-2019  11:55             2,236 server.keystore.jks
+               1 File(s)          2,236 bytes
+               2 Dir(s)  767,477,653,504 bytes free
+
+D:\rajesh\kafka-ssl>set PATH=D:\rajesh\openssl-0.9.8k_WIN32\bin;%PATH%
+
+D:\rajesh\kafka-ssl>set OPEN_SSL_CONF=D:\rajesh\openssl-0.9.8k_WIN32\openssl.cnf
+
+D:\rajesh\kafka-ssl>echo path
+path
+
+D:\rajesh\kafka-ssl>echo %PATH%
+D:\rajesh\openssl-0.9.8k_WIN32\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\PuTTY\;C:\Program Files\Java\jdk1.8.0_161\bin;D:\rajesh\apache-maven-3.6.2\bin;D:\rajesh\apache-zookeeper-3.5.6\bin;C:\Program Files\Git\cmd;C:\Users\Administrator\AppData\Local\Microsoft\WindowsApps;
+
+D:\rajesh\kafka-ssl>openssl req -new -x509 -keyout ca-key -out ca-cert -days 365
+Unable to load config info from c:/openssl/ssl/openssl.cnf
+
+D:\rajesh\kafka-ssl>set OPENSSL_CONF=D:\rajesh\openssl-0.9.8k_WIN32\openssl.cnf
+
+D:\rajesh\kafka-ssl>openssl req -new -x509 -keyout ca-key -out ca-cert -days 365
+Loading 'screen' into random state - done
+Generating a 1024 bit RSA private key
+........++++++
+..................++++++
+writing new private key to 'ca-key'
+Enter PEM pass phrase:
+Verifying - Enter PEM pass phrase:
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [AU]:IN
+State or Province Name (full name) [Some-State]:telangana
+Locality Name (eg, city) []:hyderabad
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:rps
+Organizational Unit Name (eg, section) []:training
+Common Name (eg, YOUR name) []:rajesh
+Email Address []:
+
+D:\rajesh\kafka-ssl>keytool -keystore client.truststore.jks -alias CARoot -import -file ca-cert
+Enter keystore password:
+Re-enter new password:
+Owner: CN=rajesh, OU=training, O=rps, L=hyderabad, ST=telangana, C=IN
+Issuer: CN=rajesh, OU=training, O=rps, L=hyderabad, ST=telangana, C=IN
+Serial number: bae54f92b2500ed5
+Valid from: Fri Nov 29 12:09:15 IST 2019 until: Sat Nov 28 12:09:15 IST 2020
+Certificate fingerprints:
+         MD5:  08:7F:14:9A:5A:23:23:F7:BB:70:35:A1:0C:4A:18:BF
+         SHA1: 3F:E7:2E:EB:90:D2:A5:C1:C5:15:61:E4:2A:FB:28:50:62:8B:24:3E
+         SHA256: E2:35:43:7A:66:81:22:BE:24:75:19:07:DD:10:70:8E:38:13:98:2D:5B:00:5E:EB:23:12:03:BE:98:08:F7:7D
+Signature algorithm name: SHA1withRSA
+Subject Public Key Algorithm: 1024-bit RSA key
+Version: 3
+
+Extensions:
+
+#1: ObjectId: 2.5.29.35 Criticality=false
+AuthorityKeyIdentifier [
+KeyIdentifier [
+0000: 6B BF 7A 40 42 30 7F D3   47 E3 82 46 B9 E0 DE 46  k.z@B0..G..F...F
+0010: EA 44 E3 DD                                        .D..
+]
+[CN=rajesh, OU=training, O=rps, L=hyderabad, ST=telangana, C=IN]
+SerialNumber: [    bae54f92 b2500ed5]
+]
+
+#2: ObjectId: 2.5.29.19 Criticality=false
+BasicConstraints:[
+  CA:true
+  PathLen:2147483647
+]
+
+#3: ObjectId: 2.5.29.14 Criticality=false
+SubjectKeyIdentifier [
+KeyIdentifier [
+0000: 6B BF 7A 40 42 30 7F D3   47 E3 82 46 B9 E0 DE 46  k.z@B0..G..F...F
+0010: EA 44 E3 DD                                        .D..
+]
+]
+
+Trust this certificate? [no]:  yes
+Certificate was added to keystore
+
+D:\rajesh\kafka-ssl>keytool -keystore server.truststore.jks -alias CARoot -import -file ca-cert
+Enter keystore password:
+Re-enter new password:
+Owner: CN=rajesh, OU=training, O=rps, L=hyderabad, ST=telangana, C=IN
+Issuer: CN=rajesh, OU=training, O=rps, L=hyderabad, ST=telangana, C=IN
+Serial number: bae54f92b2500ed5
+Valid from: Fri Nov 29 12:09:15 IST 2019 until: Sat Nov 28 12:09:15 IST 2020
+Certificate fingerprints:
+         MD5:  08:7F:14:9A:5A:23:23:F7:BB:70:35:A1:0C:4A:18:BF
+         SHA1: 3F:E7:2E:EB:90:D2:A5:C1:C5:15:61:E4:2A:FB:28:50:62:8B:24:3E
+         SHA256: E2:35:43:7A:66:81:22:BE:24:75:19:07:DD:10:70:8E:38:13:98:2D:5B:00:5E:EB:23:12:03:BE:98:08:F7:7D
+Signature algorithm name: SHA1withRSA
+Subject Public Key Algorithm: 1024-bit RSA key
+Version: 3
+
+Extensions:
+
+#1: ObjectId: 2.5.29.35 Criticality=false
+AuthorityKeyIdentifier [
+KeyIdentifier [
+0000: 6B BF 7A 40 42 30 7F D3   47 E3 82 46 B9 E0 DE 46  k.z@B0..G..F...F
+0010: EA 44 E3 DD                                        .D..
+]
+[CN=rajesh, OU=training, O=rps, L=hyderabad, ST=telangana, C=IN]
+SerialNumber: [    bae54f92 b2500ed5]
+]
+
+#2: ObjectId: 2.5.29.19 Criticality=false
+BasicConstraints:[
+  CA:true
+  PathLen:2147483647
+]
+
+#3: ObjectId: 2.5.29.14 Criticality=false
+SubjectKeyIdentifier [
+KeyIdentifier [
+0000: 6B BF 7A 40 42 30 7F D3   47 E3 82 46 B9 E0 DE 46  k.z@B0..G..F...F
+0010: EA 44 E3 DD                                        .D..
+]
+]
+
+Trust this certificate? [no]:  yes
+Certificate was added to keystore
+
+D:\rajesh\kafka-ssl>keytool -keystore server.keystore.jks -alias localhost -certreq -file cert-file
+Enter keystore password:
+
+Warning:
+The JKS keystore uses a proprietary format. It is recommended to migrate to PKCS12 which is an industry standard format using "keytool -importkeystore -srckeystore server.keystore.jks -destkeystore server.keystore.jks -deststoretype pkcs12".
+
+D:\rajesh\kafka-ssl>openssl x509 -req -CA ca-cert -CAkey ca-key -in cert-file -out cert-signed -days 365 -CAcreateserial -passin pass:opensslpass
+Loading 'screen' into random state - done
+Signature ok
+subject=/C=IN/ST=telangana/L=hyderabad/O=rps/OU=training/CN=rajesh
+Getting CA Private Key
+
+D:\rajesh\kafka-ssl>keytool -keystore server.keystore.jks -alias CARoot -import -file ca-cert
+Enter keystore password:
+Owner: CN=rajesh, OU=training, O=rps, L=hyderabad, ST=telangana, C=IN
+Issuer: CN=rajesh, OU=training, O=rps, L=hyderabad, ST=telangana, C=IN
+Serial number: bae54f92b2500ed5
+Valid from: Fri Nov 29 12:09:15 IST 2019 until: Sat Nov 28 12:09:15 IST 2020
+Certificate fingerprints:
+         MD5:  08:7F:14:9A:5A:23:23:F7:BB:70:35:A1:0C:4A:18:BF
+         SHA1: 3F:E7:2E:EB:90:D2:A5:C1:C5:15:61:E4:2A:FB:28:50:62:8B:24:3E
+         SHA256: E2:35:43:7A:66:81:22:BE:24:75:19:07:DD:10:70:8E:38:13:98:2D:5B:00:5E:EB:23:12:03:BE:98:08:F7:7D
+Signature algorithm name: SHA1withRSA
+Subject Public Key Algorithm: 1024-bit RSA key
+Version: 3
+
+Extensions:
+
+#1: ObjectId: 2.5.29.35 Criticality=false
+AuthorityKeyIdentifier [
+KeyIdentifier [
+0000: 6B BF 7A 40 42 30 7F D3   47 E3 82 46 B9 E0 DE 46  k.z@B0..G..F...F
+0010: EA 44 E3 DD                                        .D..
+]
+[CN=rajesh, OU=training, O=rps, L=hyderabad, ST=telangana, C=IN]
+SerialNumber: [    bae54f92 b2500ed5]
+]
+
+#2: ObjectId: 2.5.29.19 Criticality=false
+BasicConstraints:[
+  CA:true
+  PathLen:2147483647
+]
+
+#3: ObjectId: 2.5.29.14 Criticality=false
+SubjectKeyIdentifier [
+KeyIdentifier [
+0000: 6B BF 7A 40 42 30 7F D3   47 E3 82 46 B9 E0 DE 46  k.z@B0..G..F...F
+0010: EA 44 E3 DD                                        .D..
+]
+]
+
+Trust this certificate? [no]:  yes
+Certificate was added to keystore
+
+Warning:
+The JKS keystore uses a proprietary format. It is recommended to migrate to PKCS12 which is an industry standard format using "keytool -importkeystore -srckeystore server.keystore.jks -destkeystore server.keystore.jks -deststoretype pkcs12".
+
+D:\rajesh\kafka-ssl>keytool -keystore server.keystore.jks -alias localhost -import -file cert-signed
+Enter keystore password:
+Certificate reply was installed in keystore
+
+Warning:
+The JKS keystore uses a proprietary format. It is recommended to migrate to PKCS12 which is an industry standard format using "keytool -importkeystore -srckeystore server.keystore.jks -destkeystore server.keystore.jks -deststoretype pkcs12".
+
+D:\rajesh\kafka-ssl>openssl s_client -debug -connect localhost:9093 -tls1
+Loading 'screen' into random state - done
+CONNECTED(00000258)
+write to 0x25d7db8 [0x25efd30] (94 bytes => 94 (0x5E))
+0000 - 16 03 01 00 59 01 00 00-55 03 01 5d e0 c5 56 1f   ....Y...U..]..V.
+0010 - 2c d2 22 08 a0 5e f6 5f-6c 38 42 37 0e a3 dc 91   ,."..^._l8B7....
+0020 - 9c fe d1 83 b9 70 a0 29-a5 76 b0 00 00 28 00 39   .....p.).v...(.9
+0030 - 00 38 00 35 00 16 00 13-00 0a 00 33 00 32 00 2f   .8.5.......3.2./
+0040 - 00 07 00 05 00 04 00 15-00 12 00 09 00 14 00 11   ................
+0050 - 00 08 00 06 00 03 01 00-00 04 00 23               ...........#
+005e - <SPACES/NULS>
+read from 0x25d7db8 [0x25eb520] (5 bytes => 5 (0x5))
+0000 - 16 03 01 08 52                                    ....R
+read from 0x25d7db8 [0x25eb525] (2130 bytes => 2130 (0x852))
+0000 - 02 00 00 46 03 01 5d e0-c5 56 09 35 ec 57 85 1f   ...F..]..V.5.W..
+0010 - d1 41 ce f8 65 4d 8f 1c-54 46 38 73 ce 88 e4 8d   .A..eM..TF8s....
+0020 - 0e 79 cc 67 70 45 20 5d-e0 c5 56 33 6d 5e a3 d5   .y.gpE ]..V3m^..
+0030 - 0b 71 6d b9 ac 82 51 71-28 a3 b1 31 bf 6b 69 b7   .qm...Qq(..1.ki.
+0040 - 8f 1c a9 f0 4c 0b 0a 00-39 00 0b 00 05 f3 00 05   ....L...9.......
+0050 - f0 00 02 cd 30 82 02 c9-30 82 02 32 02 09 00 c0   ....0...0..2....
+0060 - 7f 8e 9f 38 0c a0 ea 30-0d 06 09 2a 86 48 86 f7   ...8...0...*.H..
+0070 - 0d 01 01 05 05 00 30 67-31 0b 30 09 06 03 55 04   ......0g1.0...U.
+0080 - 06 13 02 49 4e 31 12 30-10 06 03 55 04 08 13 09   ...IN1.0...U....
+0090 - 74 65 6c 61 6e 67 61 6e-61 31 12 30 10 06 03 55   telangana1.0...U
+00a0 - 04 07 13 09 68 79 64 65-72 61 62 61 64 31 0c 30   ....hyderabad1.0
+00b0 - 0a 06 03 55 04 0a 13 03-72 70 73 31 11 30 0f 06   ...U....rps1.0..
+00c0 - 03 55 04 0b 13 08 74 72-61 69 6e 69 6e 67 31 0f   .U....training1.
+00d0 - 30 0d 06 03 55 04 03 13-06 72 61 6a 65 73 68 30   0...U....rajesh0
+00e0 - 1e 17 0d 31 39 31 31 32-39 30 36 35 34 30 33 5a   ...191129065403Z
+00f0 - 17 0d 32 30 31 31 32 38-30 36 35 34 30 33 5a 30   ..201128065403Z0
+0100 - 67 31 0b 30 09 06 03 55-04 06 13 02 49 4e 31 12   g1.0...U....IN1.
+0110 - 30 10 06 03 55 04 08 13-09 74 65 6c 61 6e 67 61   0...U....telanga
+0120 - 6e 61 31 12 30 10 06 03-55 04 07 13 09 68 79 64   na1.0...U....hyd
+0130 - 65 72 61 62 61 64 31 0c-30 0a 06 03 55 04 0a 13   erabad1.0...U...
+0140 - 03 72 70 73 31 11 30 0f-06 03 55 04 0b 13 08 74   .rps1.0...U....t
+0150 - 72 61 69 6e 69 6e 67 31-0f 30 0d 06 03 55 04 03   raining1.0...U..
+0160 - 13 06 72 61 6a 65 73 68-30 82 01 22 30 0d 06 09   ..rajesh0.."0...
+0170 - 2a 86 48 86 f7 0d 01 01-01 05 00 03 82 01 0f 00   *.H.............
+0180 - 30 82 01 0a 02 82 01 01-00 d5 ba a0 22 2f 12 42   0..........."/.B
+0190 - ee fe 5d 38 92 1a 1b 88-69 92 b8 25 cc 22 28 2e   ..]8....i..%."(.
+01a0 - 28 9d 56 23 e6 de 23 2c-2f 71 da 97 90 ab 99 53   (.V#..#,/q.....S
+01b0 - 08 4e 24 36 8f 83 5a e8-39 f8 73 ef b5 39 c8 a8   .N$6..Z.9.s..9..
+01c0 - 2e 8e 76 05 0f 56 55 2d-af 76 e8 3e eb 0f f9 8c   ..v..VU-.v.>....
+01d0 - 80 33 cd 0f 1c 21 cf f1-af 14 10 90 a0 f6 e3 f9   .3...!..........
+01e0 - 88 cd e6 91 38 00 5e 4c-ea 2f df 0d 96 a0 5f 06   ....8.^L./...._.
+01f0 - 63 fa 9f fd 6e 5a c5 de-f2 96 10 ee b3 79 7b 70   c...nZ.......y{p
+0200 - b5 47 83 1c 0e 0a 91 aa-76 7f 2e ff 8f 18 94 c3   .G......v.......
+0210 - 4c c5 0f 44 6b 94 27 41-bd 26 ee 52 cd 83 dd ab   L..Dk.'A.&.R....
+0220 - dc 45 34 f7 8e 79 fd 60-d2 20 9c d8 01 9d aa 47   .E4..y.`. .....G
+0230 - 2c 0f 07 89 02 de d7 ec-e4 82 39 23 0f f8 90 4a   ,.........9#...J
+0240 - be 5d 3a 1c 5a 99 56 77-bc 2d 08 41 6d d0 69 bc   .]:.Z.Vw.-.Am.i.
+0250 - c3 ff 32 a4 8f d4 31 fb-82 46 ed 36 02 73 dc 98   ..2...1..F.6.s..
+0260 - c5 02 c4 fe 4c 58 b2 41-81 2b d8 81 2b e4 9d e0   ....LX.A.+..+...
+0270 - 1e 58 cb dd af 5c bc 7d-fb 3b 4c 0b ec 63 be fd   .X...\.}.;L..c..
+0280 - 32 49 c9 4f 5e 15 9d cb-df 02 03 01 00 01 30 0d   2I.O^.........0.
+0290 - 06 09 2a 86 48 86 f7 0d-01 01 05 05 00 03 81 81   ..*.H...........
+02a0 - 00 04 59 07 6c ce bb ea-6e 96 8f a8 10 df 70 d7   ..Y.l...n.....p.
+02b0 - 6a 03 d4 66 1f 1f 46 ce-a8 3c 19 a1 33 3b 33 00   j..f..F..<..3;3.
+02c0 - c9 d9 0c af 6a af bc 4d-eb 9c 9a 72 89 67 42 02   ....j..M...r.gB.
+02d0 - 3d 7e 83 71 bf f1 b7 2e-4a c0 16 73 e4 3a fb a7   =~.q....J..s.:..
+02e0 - 51 72 33 87 b8 32 9c 48-50 64 e9 72 c0 a5 f7 1d   Qr3..2.HPd.r....
+02f0 - 40 e6 dc 4b a8 68 fb 3f-2e 20 d2 37 f5 de 40 0f   @..K.h.?. .7..@.
+0300 - cd e1 2d b3 bc 07 cd a0-3b 67 4a 14 3d 9f 6a 69   ..-.....;gJ.=.ji
+0310 - 05 95 26 24 ad 42 8f 10-89 29 a0 88 af 19 a4 71   ..&$.B...).....q
+0320 - 2a 00 03 1d 30 82 03 19-30 82 02 82 a0 03 02 01   *...0...0.......
+0330 - 02 02 09 00 ba e5 4f 92-b2 50 0e d5 30 0d 06 09   ......O..P..0...
+0340 - 2a 86 48 86 f7 0d 01 01-05 05 00 30 67 31 0b 30   *.H........0g1.0
+0350 - 09 06 03 55 04 06 13 02-49 4e 31 12 30 10 06 03   ...U....IN1.0...
+0360 - 55 04 08 13 09 74 65 6c-61 6e 67 61 6e 61 31 12   U....telangana1.
+0370 - 30 10 06 03 55 04 07 13-09 68 79 64 65 72 61 62   0...U....hyderab
+0380 - 61 64 31 0c 30 0a 06 03-55 04 0a 13 03 72 70 73   ad1.0...U....rps
+0390 - 31 11 30 0f 06 03 55 04-0b 13 08 74 72 61 69 6e   1.0...U....train
+03a0 - 69 6e 67 31 0f 30 0d 06-03 55 04 03 13 06 72 61   ing1.0...U....ra
+03b0 - 6a 65 73 68 30 1e 17 0d-31 39 31 31 32 39 30 36   jesh0...19112906
+03c0 - 33 39 31 35 5a 17 0d 32-30 31 31 32 38 30 36 33   3915Z..201128063
+03d0 - 39 31 35 5a 30 67 31 0b-30 09 06 03 55 04 06 13   915Z0g1.0...U...
+03e0 - 02 49 4e 31 12 30 10 06-03 55 04 08 13 09 74 65   .IN1.0...U....te
+03f0 - 6c 61 6e 67 61 6e 61 31-12 30 10 06 03 55 04 07   langana1.0...U..
+0400 - 13 09 68 79 64 65 72 61-62 61 64 31 0c 30 0a 06   ..hyderabad1.0..
+0410 - 03 55 04 0a 13 03 72 70-73 31 11 30 0f 06 03 55   .U....rps1.0...U
+0420 - 04 0b 13 08 74 72 61 69-6e 69 6e 67 31 0f 30 0d   ....training1.0.
+0430 - 06 03 55 04 03 13 06 72-61 6a 65 73 68 30 81 9f   ..U....rajesh0..
+0440 - 30 0d 06 09 2a 86 48 86-f7 0d 01 01 01 05 00 03   0...*.H.........
+0450 - 81 8d 00 30 81 89 02 81-81 00 ae f3 b1 47 55 9c   ...0.........GU.
+0460 - 66 04 0b 40 44 a5 e9 63-07 9d c6 92 9f 69 e8 4d   f..@D..c.....i.M
+0470 - 6f 26 7d 2e 6a 4d 50 57-0f 27 a4 e1 b8 44 57 a2   o&}.jMPW.'...DW.
+0480 - dc 76 4b a1 0c 05 41 0d-e0 39 3a ad 07 b4 9d 86   .vK...A..9:.....
+0490 - e7 bd f9 a8 fe 81 5b 88-1b 22 2f 2f 7f e5 b1 74   ......[.."//...t
+04a0 - 8a f9 0e 4b 83 e9 87 d4-c8 dd d6 cc 71 2e 08 42   ...K........q..B
+04b0 - 65 a2 5e cd d7 ec 19 90-72 55 1f 97 eb 23 c4 28   e.^.....rU...#.(
+04c0 - 96 e5 a5 1d 86 a1 6b 0b-12 1b 31 90 fe dc 6b 0f   ......k...1...k.
+04d0 - 37 1d 2e bb c2 77 67 ab-b8 d5 02 03 01 00 01 a3   7....wg.........
+04e0 - 81 cc 30 81 c9 30 1d 06-03 55 1d 0e 04 16 04 14   ..0..0...U......
+04f0 - 6b bf 7a 40 42 30 7f d3-47 e3 82 46 b9 e0 de 46   k.z@B0..G..F...F
+0500 - ea 44 e3 dd 30 81 99 06-03 55 1d 23 04 81 91 30   .D..0....U.#...0
+0510 - 81 8e 80 14 6b bf 7a 40-42 30 7f d3 47 e3 82 46   ....k.z@B0..G..F
+0520 - b9 e0 de 46 ea 44 e3 dd-a1 6b a4 69 30 67 31 0b   ...F.D...k.i0g1.
+0530 - 30 09 06 03 55 04 06 13-02 49 4e 31 12 30 10 06   0...U....IN1.0..
+0540 - 03 55 04 08 13 09 74 65-6c 61 6e 67 61 6e 61 31   .U....telangana1
+0550 - 12 30 10 06 03 55 04 07-13 09 68 79 64 65 72 61   .0...U....hydera
+0560 - 62 61 64 31 0c 30 0a 06-03 55 04 0a 13 03 72 70   bad1.0...U....rp
+0570 - 73 31 11 30 0f 06 03 55-04 0b 13 08 74 72 61 69   s1.0...U....trai
+0580 - 6e 69 6e 67 31 0f 30 0d-06 03 55 04 03 13 06 72   ning1.0...U....r
+0590 - 61 6a 65 73 68 82 09 00-ba e5 4f 92 b2 50 0e d5   ajesh.....O..P..
+05a0 - 30 0c 06 03 55 1d 13 04-05 30 03 01 01 ff 30 0d   0...U....0....0.
+05b0 - 06 09 2a 86 48 86 f7 0d-01 01 05 05 00 03 81 81   ..*.H...........
+05c0 - 00 10 91 65 2a c4 c6 7e-f5 85 5c 5c 6c 13 35 9a   ...e*..~..\\l.5.
+05d0 - 1b a1 21 88 5b 8f aa 59-3a ac b5 c8 6d 21 f4 a8   ..!.[..Y:...m!..
+05e0 - fc 72 59 a4 37 5a f7 81-05 c6 3a ab 3f 54 da 7f   .rY.7Z....:.?T..
+05f0 - b6 cf 17 be 90 f8 e6 d0-4a 3e 6c 11 59 cd 5d 64   ........J>l.Y.]d
+0600 - 5f e0 e2 57 4a 1a 9d 69-1f cf aa 03 70 8f 70 e9   _..WJ..i....p.p.
+0610 - 59 3d 91 2c db a6 35 54-8d 10 05 52 bc 87 b6 5f   Y=.,..5T...R..._
+0620 - 15 22 5e 06 98 85 aa ce-e0 9a e2 f5 b4 e3 9c 1a   ."^.............
+0630 - 76 3b 95 46 87 75 3f a5-d5 8a 98 7b 34 ff 70 dd   v;.F.u?....{4.p.
+0640 - cf 0c 00 02 09 00 80 ff-ff ff ff ff ff ff ff c9   ................
+0650 - 0f da a2 21 68 c2 34 c4-c6 62 8b 80 dc 1c d1 29   ...!h.4..b.....)
+0660 - 02 4e 08 8a 67 cc 74 02-0b be a6 3b 13 9b 22 51   .N..g.t....;.."Q
+0670 - 4a 08 79 8e 34 04 dd ef-95 19 b3 cd 3a 43 1b 30   J.y.4.......:C.0
+0680 - 2b 0a 6d f2 5f 14 37 4f-e1 35 6d 6d 51 c2 45 e4   +.m._.7O.5mmQ.E.
+0690 - 85 b5 76 62 5e 7e c6 f4-4c 42 e9 a6 37 ed 6b 0b   ..vb^~..LB..7.k.
+06a0 - ff 5c b6 f4 06 b7 ed ee-38 6b fb 5a 89 9f a5 ae   .\......8k.Z....
+06b0 - 9f 24 11 7c 4b 1f e6 49-28 66 51 ec e6 53 81 ff   .$.|K..I(fQ..S..
+06c0 - ff ff ff ff ff ff ff 00-01 02 00 80 85 fd 58 e0   ..............X.
+06d0 - e6 33 78 0c ae d8 5a 69-f1 63 f5 ad 74 d7 dc af   .3x...Zi.c..t...
+06e0 - 15 9c 55 fa 0a 40 1f 44-9e ec 80 0a d5 a7 6f 06   ..U..@.D......o.
+06f0 - 3c 33 72 0e c9 4f c3 22-24 54 36 7a cb 61 b4 83   <3r..O."$T6z.a..
+0700 - 1e 1d 5c d8 b5 91 f4 72-85 ed c2 6b 12 ea fc f7   ..\....r...k....
+0710 - 73 a1 50 8e 52 6b 6b 61-6c a2 4a e1 4d 9d bb 48   s.P.Rkkal.J.M..H
+0720 - d0 3f 11 7f 66 34 a6 2e-20 3f ff e2 cc 4f db 89   .?..f4.. ?...O..
+0730 - ab c1 80 f9 d8 36 3c 2b-4d 88 cb 14 1a 84 4f bf   .....6<+M.....O.
+0740 - c1 95 26 97 2d 69 fb 11-d3 38 c8 4c 01 00 17 db   ..&.-i...8.L....
+0750 - 24 68 b5 aa 28 f8 72 1f-a7 bd 7f 1e 2c c7 52 fd   $h..(.r.....,.R.
+0760 - 89 03 f7 9c 57 88 ea 7a-8b 32 16 07 50 38 7f 4c   ....W..z.2..P8.L
+0770 - a7 d6 66 5c 8c ec 0c c2-b2 e1 f2 8a 21 26 dc f2   ..f\........!&..
+0780 - 92 69 f0 51 77 09 e1 23-e1 df 0d 67 bf 18 08 30   .i.Qw..#...g...0
+0790 - 4b c7 5b 66 31 c7 d0 23-7e 4c f1 d7 a5 e1 5f 40   K.[f1..#~L...._@
+07a0 - 9b 62 2d 28 24 b0 b5 7b-c0 3e 5f 97 72 7e 68 32   .b-($..{.>_.r~h2
+07b0 - 34 cf e3 4a 69 b4 74 2e-ab 0d 68 3e a2 6f f7 f5   4..Ji.t...h>.o..
+07c0 - dc 99 39 77 cc a7 33 f9-11 63 60 95 48 d2 b0 44   ..9w..3..c`.H..D
+07d0 - bb 02 02 89 5d f9 43 77-a8 6e bb 60 d2 41 b3 da   ....].Cw.n.`.A..
+07e0 - ec c7 77 c0 13 86 fa 00-e5 02 c3 bc 09 ca 75 27   ..w...........u'
+07f0 - ae bf 77 ca 9e e0 43 66-d0 9b 8c 00 5c ea 2c 70   ..w...Cf....\.,p
+0800 - 97 09 4a c5 bb f1 5c 6c-ee 1c e2 08 a3 2a 95 9a   ..J...\l.....*..
+0810 - d1 c7 4f 6f 86 80 ce 99-ec 77 93 9b 1a a3 de 9b   ..Oo.....w......
+0820 - 70 25 ac cb 70 3a df 72-a5 77 74 ac 9d 4a bc 54   p%..p:.r.wt..J.T
+0830 - 16 bc db 01 8d ae 60 11-a4 89 9c aa 4d 77 4a 36   ......`.....MwJ6
+0840 - 52 44 4e 2a 3a 1f 97 82-95 22 d7 8e e0 17 0e      RDN*:....".....
+0852 - <SPACES/NULS>
+depth=0 /C=IN/ST=telangana/L=hyderabad/O=rps/OU=training/CN=rajesh
+verify error:num=18:self signed certificate
+verify return:1
+depth=0 /C=IN/ST=telangana/L=hyderabad/O=rps/OU=training/CN=rajesh
+verify error:num=7:certificate signature failure
+verify return:1
+depth=0 /C=IN/ST=telangana/L=hyderabad/O=rps/OU=training/CN=rajesh
+verify return:1
+write to 0x25d7db8 [0x25f4648] (139 bytes => 139 (0x8B))
+0000 - 16 03 01 00 86 10 00 00-82 00 80 45 56 07 d8 30   ...........EV..0
+0010 - 63 75 b6 72 7c 25 b2 7b-d9 f7 ff 11 47 a4 f9 a8   cu.r|%.{....G...
+0020 - 42 68 9e 52 9c 76 4e a9-00 b8 5b f2 a2 62 97 aa   Bh.R.vN...[..b..
+0030 - 13 9e 77 9e ee 85 9e 13-cd 46 6b c6 94 c4 2b 70   ..w......Fk...+p
+0040 - bf 3d 12 b1 7b ba 2d ad-55 d0 e7 46 b6 70 c3 b2   .=..{.-.U..F.p..
+0050 - 7f 4f 48 2f e6 6e 34 3a-b7 9c 57 8f cb 05 cd 4e   .OH/.n4:..W....N
+0060 - b3 60 16 8b 2d 66 2b 39-2d 1d 00 05 2c e8 78 7b   .`..-f+9-...,.x{
+0070 - 5c 9f 48 a0 51 89 86 ca-92 14 e5 93 78 c8 ec 8e   \.H.Q.......x...
+0080 - eb 64 8c 22 e5 cd 92 ef-0d df 49                  .d."......I
+write to 0x25d7db8 [0x25f4648] (6 bytes => 6 (0x6))
+0000 - 14 03 01 00 01 01                                 ......
+write to 0x25d7db8 [0x25f4648] (53 bytes => 53 (0x35))
+0000 - 16 03 01 00 30 6d 78 33-04 2e be bc 60 db 08 7d   ....0mx3....`..}
+0010 - 4b 6f 47 4d c3 7c bb a2-87 db a2 5c 55 39 8a cd   KoGM.|.....\U9..
+0020 - d2 f8 3d c7 a0 2f 29 7f-64 72 bf 01 9b 4b 6f 33   ..=../).dr...Ko3
+0030 - e6 0d 62 2e d5                                    ..b..
+read from 0x25d7db8 [0x25eb520] (5 bytes => 5 (0x5))
+0000 - 14 03 01 00 01                                    .....
+read from 0x25d7db8 [0x25eb525] (1 bytes => 1 (0x1))
+0000 - 01                                                .
+read from 0x25d7db8 [0x25eb520] (5 bytes => 5 (0x5))
+0000 - 16 03 01 00 30                                    ....0
+read from 0x25d7db8 [0x25eb525] (48 bytes => 48 (0x30))
+0000 - a2 f0 74 6f 24 6c 88 56-c6 98 ea 0f c4 9c 6a 18   ..to$l.V......j.
+0010 - 84 fd e6 b8 48 87 93 e3-2d 86 0c a4 14 b4 a5 c3   ....H...-.......
+0020 - c7 d8 6a e4 94 4a bf a8-f5 aa e2 44 f5 86 44 d9   ..j..J.....D..D.
+---
+Certificate chain
+ 0 s:/C=IN/ST=telangana/L=hyderabad/O=rps/OU=training/CN=rajesh
+   i:/C=IN/ST=telangana/L=hyderabad/O=rps/OU=training/CN=rajesh
+ 1 s:/C=IN/ST=telangana/L=hyderabad/O=rps/OU=training/CN=rajesh
+   i:/C=IN/ST=telangana/L=hyderabad/O=rps/OU=training/CN=rajesh
+---
+Server certificate
+-----BEGIN CERTIFICATE-----
+MIICyTCCAjICCQDAf46fOAyg6jANBgkqhkiG9w0BAQUFADBnMQswCQYDVQQGEwJJ
+TjESMBAGA1UECBMJdGVsYW5nYW5hMRIwEAYDVQQHEwloeWRlcmFiYWQxDDAKBgNV
+BAoTA3JwczERMA8GA1UECxMIdHJhaW5pbmcxDzANBgNVBAMTBnJhamVzaDAeFw0x
+OTExMjkwNjU0MDNaFw0yMDExMjgwNjU0MDNaMGcxCzAJBgNVBAYTAklOMRIwEAYD
+VQQIEwl0ZWxhbmdhbmExEjAQBgNVBAcTCWh5ZGVyYWJhZDEMMAoGA1UEChMDcnBz
+MREwDwYDVQQLEwh0cmFpbmluZzEPMA0GA1UEAxMGcmFqZXNoMIIBIjANBgkqhkiG
+9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1bqgIi8SQu7+XTiSGhuIaZK4JcwiKC4onVYj
+5t4jLC9x2peQq5lTCE4kNo+DWug5+HPvtTnIqC6OdgUPVlUtr3boPusP+YyAM80P
+HCHP8a8UEJCg9uP5iM3mkTgAXkzqL98NlqBfBmP6n/1uWsXe8pYQ7rN5e3C1R4Mc
+DgqRqnZ/Lv+PGJTDTMUPRGuUJ0G9Ju5SzYPdq9xFNPeOef1g0iCc2AGdqkcsDweJ
+At7X7OSCOSMP+JBKvl06HFqZVne8LQhBbdBpvMP/MqSP1DH7gkbtNgJz3JjFAsT+
+TFiyQYEr2IEr5J3gHljL3a9cvH37O0wL7GO+/TJJyU9eFZ3L3wIDAQABMA0GCSqG
+SIb3DQEBBQUAA4GBAARZB2zOu+pulo+oEN9w12oD1GYfH0bOqDwZoTM7MwDJ2Qyv
+aq+8TeucmnKJZ0ICPX6Dcb/xty5KwBZz5Dr7p1FyM4e4MpxIUGTpcsCl9x1A5txL
+qGj7Py4g0jf13kAPzeEts7wHzaA7Z0oUPZ9qaQWVJiStQo8QiSmgiK8ZpHEq
+-----END CERTIFICATE-----
+subject=/C=IN/ST=telangana/L=hyderabad/O=rps/OU=training/CN=rajesh
+issuer=/C=IN/ST=telangana/L=hyderabad/O=rps/OU=training/CN=rajesh
+---
+No client certificate CA names sent
+---
+SSL handshake has read 2194 bytes and written 292 bytes
+---
+New, TLSv1/SSLv3, Cipher is DHE-RSA-AES256-SHA
+Server public key is 2048 bit
+Compression: NONE
+Expansion: NONE
+SSL-Session:
+    Protocol  : TLSv1
+    Cipher    : DHE-RSA-AES256-SHA
+    Session-ID: 5DE0C556336D5EA3D50B716DB9AC82517128A3B131BF6B69B78F1CA9F04C0B0A
+    Session-ID-ctx:
+    Master-Key: 918158505F7DC75D29161C1E9B79E3CA9376082F53629ED850A7F18FE03034F243B344359B40FD06FCCAAF5FCB56C4C4
+    Key-Arg   : None
+    Start Time: 1575011670
+    Timeout   : 7200 (sec)
+    Verify return code: 7 (certificate signature failure)
+---
+
+write to 0x25d7db8 [0x25efd30] (74 bytes => 74 (0x4A))
+0000 - 17 03 01 00 20 58 6f 9f-ce d2 31 25 cc 4b 14 e2   .... Xo...1%.K..
+0010 - f4 93 b3 ac eb 1a 63 53-a4 df 68 92 7f 61 92 c4   ......cS..h..a..
+0020 - 01 cb 40 56 b4 17 03 01-00 20 f2 44 d1 a3 87 33   ..@V..... .D...3
+0030 - 14 ee 5e 03 d4 c5 7f a4-91 95 0a 37 4f 46 e1 e8   ..^........7OF..
+0040 - c6 4f 4d 06 8f c4 d9 ca-60 de                     .OM.....`.
+
+write to 0x25d7db8 [0x25efd30] (74 bytes => 74 (0x4A))
+0000 - 17 03 01 00 20 48 5b 62-ec fd 9f 14 1f 0c b9 07   .... H[b........
+0010 - a7 a2 32 19 73 26 8e 7a-16 6f a0 a9 89 a9 cb 82   ..2.s&.z.o......
+0020 - 02 a0 39 d7 f1 17 03 01-00 20 bd 8e aa 5d 84 fd   ..9...... ...]..
+0030 - d9 b7 68 56 dc 76 ba 84-32 6e 67 6e 83 cd c1 66   ..hV.v..2ngn...f
+0040 - 41 13 11 b2 81 46 10 64-ba 14                     A....F.d..
+read from 0x25d7db8 [0x25eb520] (5 bytes => 5 (0x5))
+0000 - 15 03 01                                          ...
+0005 - <SPACES/NULS>
+read from 0x25d7db8 [0x25eb525] (32 bytes => 32 (0x20))
+0000 - 2a 0f fa 9f a8 0f 5e 4c-aa 26 61 b9 fb 40 fa 71   *.....^L.&a..@.q
+0010 - b4 3a c3 82 45 8d 42 f4-19 90 a7 98 16 8e 49 87   .:..E.B.......I.
+closed
+write to 0x25d7db8 [0x25efd30] (37 bytes => 37 (0x25))
+0000 - 15 03 01 00 20 24 60 76-c6 b2 ca 32 9a 32 29 42   .... $`v...2.2)B
+0010 - 01 0a 29 75 de 54 06 e9-7c 12 9f 76 62 90 88 a0   ..)u.T..|..vb...
+0020 - 6b 70 63 24 05                                    kpc$.
+
+D:\rajesh\kafka-ssl>
